@@ -1,6 +1,5 @@
 {
   "devDependencies": {
-    "@types/express-winston": "^4.0.0",
     "eslint": "^8.55.0",
     "eslint-config-airbnb-base": "^15.0.0",
     "eslint-plugin-import": "^2.29.0"
