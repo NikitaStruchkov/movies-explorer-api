@@ -2,10 +2,11 @@ const Movie = require('../models/movie');
 
 const NotFoundError = require('../errors/NotFoundError');
 const BadRequestError = require('../errors/BadRequestError');
+const UnauthorizedError = require('../errors/UnauthorizedError');
 
 // возвращает все сохранённые текущим пользователем фильмы
 module.exports.getMovies = (req, res, next) => {
-  Movie.find({})
+  Movie.find({ owner: req.user.id })
     .then((movies) => res.send(movies))
     .catch(next);
 };
@@ -44,7 +45,10 @@ module.exports.deleteMovieById = (req, res, next) => {
   Movie.findById(req.params._id)
     .orFail(() => NotFoundError('Фильм с указанным _id не найден.'))
     .then((movie) => {
-      movie
+      if (JSON.stringify(movie.owner) !== JSON.stringify(req.user._id)) {
+        return next(new UnauthorizedError('Невозможно удалить чужой фильм'));
+      }
+      return movie
         .deleteOne()
         .then(() => res.send({ message: 'Фильм удален.' }));
     })

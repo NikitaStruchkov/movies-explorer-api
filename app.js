@@ -1,4 +1,3 @@
-const { rateLimit } = require('express-rate-limit');
 const express = require('express');
 const mongoose = require('mongoose');
 const helmet = require('helmet');
@@ -7,8 +6,8 @@ const cookieParser = require('cookie-parser');
 const userRouter = require('./routes/user');
 const cardRouter = require('./routes/movie');
 const { login, createUser, logout } = require('./controllers/user');
-const auth = require('./middlewares/auth');
 const { requestLogger, errorLogger } = require('./middlewares/logger');
+const limiter = require('./middlewares/limiter');
 // Слушаем 3001 порт
 const { PORT = 3001, MONGO_URL = 'mongodb://127.0.0.1/bitfilmsdb' } = process.env;
 
@@ -18,17 +17,10 @@ app.get('/', (req, res) => {
   res.send('movies');
 });
 
-const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  limit: 100, // Limit each IP to 100 requests per `window` (here, per 15 minutes).
-  standardHeaders: 'draft-7', // draft-6: `RateLimit-*` headers; draft-7: combined `RateLimit` header
-  legacyHeaders: false, // Disable the `X-RateLimit-*` headers.
-// store: ... , // Use an external store for consistency across multiple server instances.
-});
-
 // подключаемся к серверу mongo
 mongoose.connect(MONGO_URL);
 app.use(helmet());
+app.use(limiter);
 app.use(cookieParser()); // для извлечения данных из cookies
 app.use(express.json());
 app.use(requestLogger); // подключаем логгер запросов
@@ -37,14 +29,10 @@ app.post('/signin', login);
 app.post('/signup', createUser);
 // Запрос на выход
 app.use('/signout', logout);
-app.use(limiter);
 app.use(userRouter);
 app.use(cardRouter);
 
 app.use(errorLogger); // подключаем логгер ошибок
-
-// авторизация
-app.use(auth);
 
 // обработчики ошибок
 app.use(errors()); // обработчик ошибок celebrate

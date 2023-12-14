@@ -42,6 +42,9 @@ module.exports.updateUser = (req, res, next) => {
     .orFail(new NotFoundError('Пользователь по указанному _id не найден.'))
     .then((card) => res.send(card))
     .catch((err) => {
+      if (err.code === 11000) {
+        return next(new ConflictError('Пользователь с такой почтой уже существует'));
+      }
       if (err instanceof NotFoundError) {
         return next(err);
       }
