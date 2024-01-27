@@ -1,6 +1,7 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const helmet = require('helmet');
+const cors = require('./middlewares/cors');
 const { errors } = require('celebrate');
 const cookieParser = require('cookie-parser');
 const userRouter = require('./routes/user');
@@ -23,6 +24,7 @@ app.use(helmet());
 app.use(limiter);
 app.use(cookieParser()); // для извлечения данных из cookies
 app.use(express.json());
+app.use(cors);
 app.use(requestLogger); // подключаем логгер запросов
 // роуты
 app.post('/signin', login);
