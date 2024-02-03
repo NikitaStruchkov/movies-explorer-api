@@ -93,7 +93,7 @@ module.exports.login = (req, res, next) => {
       res.cookie('token', token, {
         maxAge: 3600000 * 24 * 7,
         httpOnly: true,
-        sameSite: true,
+        // sameSite: true,
         // secure: NODE_ENV === 'production',
       })
         .send({ message: 'Авторизация прошла успешно' });
