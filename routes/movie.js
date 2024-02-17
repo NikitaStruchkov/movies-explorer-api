@@ -12,6 +12,6 @@ movieRouter.get('/movies', auth, getMovies);
 movieRouter.post('/movies', auth, createMovie);
 
 // удаляет сохранённый фильм по id
-movieRouter.delete('/movies/_id', auth, deleteMovieById);
+movieRouter.delete('/movies/:_id', auth, deleteMovieById);
 
 module.exports = movieRouter;

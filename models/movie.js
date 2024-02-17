@@ -4,59 +4,47 @@ const isUrl = require('validator/lib/isURL');
 const movieSchema = new mongoose.Schema({
   country: {
     type: String,
-    required: true,
+    required: [true, 'поле country обязательное'],
   },
-
   director: {
     type: String,
-    required: true,
+    required: [true, 'поле director обязательное'],
   },
-
   duration: {
     type: Number,
-    required: true,
+    required: [true, 'поле duration обязательное'],
   },
-
   year: {
     type: String,
-    required: true,
+    required: [true, 'поле year обязательное'],
   },
-
   description: {
     type: String,
-    required: true,
+    required: [true, 'поле description обязательное'],
   },
-
   image: {
-    type: String,
-    validate: {
-      validator: (image) => isUrl(image, {
-        protocols: ['http', 'https'],
-        require_protocol: true,
-      }),
-      message: 'Некорректный адрес URL',
-    },
+    type: Object,
+    required: [true, 'поле image обязательное'],
+    // validate: {
+    //   validator: (v) => isUrl(v),
+    //   message: 'введите адрес ссылки',
+    // },
   },
-
   trailerLink: {
     type: String,
+    required: [true, 'поле trailerLink обязательное'],
     validate: {
-      validator: (trailerLink) => isUrl(trailerLink, {
-        protocols: ['http', 'https'],
-        require_protocol: true,
-      }),
-      message: 'Некорректный адрес URL',
+      validator: (v) => isUrl(v),
+      message: 'введите адрес ссылки',
     },
   },
   thumbnail: {
-    type: String,
-    validate: {
-      validator: (thumbnail) => isUrl(thumbnail, {
-        protocols: ['http', 'https'],
-        require_protocol: true,
-      }),
-      message: 'Некорректный адрес URL',
-    },
+    type: Object,
+    // required: [true, 'поле thumbnail обязательное'],
+    // validate: {
+    //   validator: (v) => isUrl(v),
+    //   message: 'введите адрес ссылки',
+    // },
   },
   owner: {
     type: mongoose.Schema.Types.ObjectId,
@@ -65,16 +53,21 @@ const movieSchema = new mongoose.Schema({
   },
   movieId: {
     type: Number,
-    required: true,
+    required: [true, 'поле movieId обязательное'],
   },
   nameRU: {
     type: String,
-    required: true,
+    required: [true, 'поле nameRU обязательное'],
   },
   nameEN: {
     type: String,
-    required: true,
+    required: [true, 'поле nameEN обязательное'],
   },
+  isLiked: {
+    type: Boolean,
+    required: [false],
+  },
+
 });
 
 module.exports = mongoose.model('movie', movieSchema); // модель фильма

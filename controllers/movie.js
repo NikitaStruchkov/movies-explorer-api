@@ -6,7 +6,7 @@ const UnauthorizedError = require('../errors/UnauthorizedError');
 
 // возвращает все сохранённые текущим пользователем фильмы
 module.exports.getMovies = (req, res, next) => {
-  Movie.find({ owner: req.user.id })
+  Movie.find({ owner: req.user._id })
     .then((movies) => res.send(movies))
     .catch(next);
 };
@@ -14,8 +14,18 @@ module.exports.getMovies = (req, res, next) => {
 // создаёт фильм
 module.exports.createMovie = (req, res, next) => {
   const {
-    country, director, duration, year, description, image,
-    trailer, nameRU, nameEN, thumbnail, movieId,
+    country,
+    director,
+    duration,
+    year,
+    description,
+    image,
+    trailerLink,
+    thumbnail,
+    movieId,
+    nameRU,
+    nameEN,
+    isLiked,
   } = req.body;
   Movie.create({
     country,
@@ -24,18 +34,19 @@ module.exports.createMovie = (req, res, next) => {
     year,
     description,
     image,
-    trailer,
-    nameRU,
-    nameEN,
+    trailerLink,
     thumbnail,
     movieId,
+    nameRU,
+    nameEN,
     owner: req.user._id, // При успешной авторизации в объекте
     // запроса появится свойство user, в которое запишется пейлоуд токена
+    isLiked,
   })
     .then((movie) => res.status(201).send(movie))
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        return next(new BadRequestError('Переданы некорректные данные при создании фильма.'));
+        return next(err.message);
       } return next(err);
     });
 };
